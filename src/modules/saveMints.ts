@@ -5,6 +5,7 @@ type MintMetadata = {
   imageUrl?: string
   attributes?: Attributes
   attributeProbabilities?: object
+  ranks?: object
 }
 
 type Attributes = {

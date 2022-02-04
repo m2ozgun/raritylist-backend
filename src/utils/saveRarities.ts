@@ -1,7 +1,6 @@
 import { getMintModel, MintType } from '../db/models/MintModel'
 import { getMints } from '../modules/getMints'
 import { updateCollectionTraitOccurences } from '../modules/updateCollectionTraitOccurences'
-
 type Trait = {
   [key: string]: number
 }
@@ -15,7 +14,7 @@ type AttributeProbabilities = {
 }
 
 type AttributeRanks = {
-  [key: string]: number
+  [key: string]: Trait
 }
 
 const calculateTraitOccurences = (mints: MintType[]) => {
@@ -57,9 +56,63 @@ const calculateMintAttributeProbabilities = (
   return attributeProbabilities
 }
 
+const calculateMintAttributeRanks = async (
+  collectionName: string,
+  traits: string[]
+) => {
+  const attributeRanks: AttributeRanks = {}
+
+  for (const trait of traits) {
+    const sortedMints = await getMints(
+      collectionName,
+      `attributeProbabilities.${trait}`
+    )
+
+    for (const mint of sortedMints) {
+      if (!attributeRanks[mint._id]) attributeRanks[mint._id] = {}
+
+      attributeRanks[mint._id][trait] = sortedMints.findIndex(
+        x => x._id === mint._id
+      )
+    }
+
+    console.log('attributeRanks', attributeRanks)
+  }
+
+  return attributeRanks
+}
+
+const saveRanks = async (collectionName: string) => {
+  const mints = await getMints(collectionName)
+  const traitOccurences = calculateTraitOccurences(mints)
+  const traits = [...Object.keys(traitOccurences), '__aggregate__']
+
+  const attributeRanks = await calculateMintAttributeRanks(
+    collectionName,
+    traits
+  )
+
+  const mintModel = getMintModel(collectionName)
+  let bulkOp = mintModel.collection.initializeUnorderedBulkOp()
+  let opsCount = 0
+
+  mints.forEach(async mint => {
+    const ranks = attributeRanks[mint._id]
+
+    bulkOp.find({ _id: mint._id }).updateOne({ $set: { ranks } })
+  })
+
+  if (++opsCount % 10000 === 0) {
+    await bulkOp.execute()
+    bulkOp = mintModel.collection.initializeUnorderedBulkOp()
+  }
+  await bulkOp.execute()
+}
+
 export const saveTraitOccurences = async (collectionName: string) => {
   const mints = await getMints(collectionName)
   const traitOccurences = calculateTraitOccurences(mints)
+
   await updateCollectionTraitOccurences(collectionName, traitOccurences)
 
   const mintModel = getMintModel(collectionName)
@@ -84,4 +137,6 @@ export const saveTraitOccurences = async (collectionName: string) => {
     bulkOp = mintModel.collection.initializeUnorderedBulkOp()
   }
   await bulkOp.execute()
+
+  await saveRanks(collectionName)
 }
