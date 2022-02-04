@@ -4,8 +4,8 @@ const app = express()
 import bodyParser from 'body-parser'
 import { getMintAddresses } from './utils/getMintAddresses'
 import { getBulkMetadata } from './utils/getMintMetadata'
-import { saveMints } from './utils/saveMints'
-import { getMint } from './utils/getMint'
+import { saveMints } from './modules/saveMints'
+import { getMint } from './modules/getMint'
 
 const PORT = 8000
 
