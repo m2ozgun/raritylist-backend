@@ -36,7 +36,7 @@ const countAttributeOccurences = (mints: MintType[]) => {
   return traitOccurences
 }
 
-// get attribute probabilities for catorical attributes
+// get attribute probabilities for categorical attributes
 const calculateMintAttributeProbabilities = (
   mints: MintType[],
   traitOccurences: Occurence
@@ -76,12 +76,12 @@ const calculateMintAttributeRanks = async (
       `attributeProbabilities.${trait}`
     )
 
+    console.log('sortedMints', trait, sortedMints[0])
+
     for (const mint of sortedMints) {
       if (!attributeRanks[mint._id]) attributeRanks[mint._id] = {}
 
-      attributeRanks[mint._id][trait] = sortedMints.findIndex(
-        x => x._id === mint._id
-      )
+      attributeRanks[mint._id][trait] = mint.rank
     }
   }
 
