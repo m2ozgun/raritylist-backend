@@ -3,8 +3,8 @@ import { connectDatabase } from './db/connectDatabase'
 const app = express()
 import bodyParser from 'body-parser'
 import { getMintAddresses } from './utils/getMintAddresses'
-import { getMintMetadata } from './utils/getMintMetadata'
-import { saveMint } from './utils/saveMint'
+import { getBulkMetadata, getMintMetadata } from './utils/getMintMetadata'
+import { saveMints } from './utils/saveMints'
 
 const PORT = 8000
 
@@ -17,14 +17,16 @@ app.post('/save-collection', async (req, res) => {
   if (!req.body?.creatorId) return res.status(500).send('No creatorId found.')
 
   const mintAddresses = await getMintAddresses(req.body.creatorId)
-  // const mintAddresses = ['E42FAenvc3VDz2uyKgjvs8pBsi8Hk7tsMo8c9prEuj2b']
+  // const mintAddresses = [
+  //   'E42FAenvc3VDz2uyKgjvs8pBsi8Hk7tsMo8c9prEuj2b',
+  //   '7fwBaWCzQb2Fc2coVfoHVcT4MxBesAHKXCiRvTKSTj15',
+  // ]
+  console.log('Mint Addresses', mintAddresses.length)
 
-  for (const address of mintAddresses) {
-    const mintMetadata = await getMintMetadata(address)
-    await saveMint(mintMetadata)
-  }
+  const mints = await getBulkMetadata(mintAddresses)
+  if (!mints) return res.status(500).send('No mints found.')
+  await saveMints(mints)
 
-  console.log(mintAddresses)
   return res.send('done')
 })
 

@@ -10,6 +10,21 @@ const TOKEN_METADATA_PROGRAM = new PublicKey(
   'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
 )
 
+type Attributes = {
+  [key: string]: string
+}
+
+type Attribute = {
+  trait_type: string
+  value: string
+}
+
+type MintMetadata = {
+  name?: string
+  imageUrl?: string
+  attributes?: Attributes
+}
+
 class Creator {
   address: PublicKey
   verified: boolean
@@ -184,17 +199,45 @@ export const getMintUri = async (mintAddress: string) => {
 }
 
 export const getMintMetadata = async (mintAddress: string) => {
+  console.log('Fetching', mintAddress)
+
   const mintUri = await getMintUri(mintAddress)
 
   if (!mintUri) throw new Error('No mint uri found.')
 
-  let mintData
+  // let mintData: MintMetadata
   try {
     const mintMetadata = await axios.get(mintUri)
-    mintData = mintMetadata.data
+
+    const { name, properties, attributes } = mintMetadata.data
+
+    const attributesObject: Attributes = {}
+    attributes.forEach((attribute: Attribute) => {
+      attributesObject[attribute.trait_type] = attribute.value
+    })
+
+    const mintData = {
+      attributes: attributesObject,
+      imageUrl: properties.files[0].uri,
+      name,
+    }
+    return mintData
   } catch (error) {
     console.log(error)
+    return {}
   }
+}
 
-  return mintData
+export const getBulkMetadata = async (mintAddresses: string[]) => {
+  // const mints: MintMetadata[] = []
+
+  const mintPromises = mintAddresses.map(address => getMintMetadata(address))
+
+  const mints: MintMetadata[] = await Promise.all(mintPromises)
+  // for (const address of mintAddresses) {
+  //   const mintMetadata = await getMintMetadata(address)
+  //   if (mintMetadata) mints.push(mintMetadata)
+  // }
+
+  return mints
 }
