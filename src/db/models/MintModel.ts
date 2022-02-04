@@ -4,12 +4,14 @@ export type MintType = Document & {
   attributes: object
   imageUrl: string
   name: string
+  attributeProbabilities: object
 }
 
 export const Mint = new Schema({
   attributes: Object,
   imageUrl: String,
   name: String,
+  attributeProbabilities: Object,
 })
 
 export const getMintModel = (collectionName: string): Model<MintType> => {

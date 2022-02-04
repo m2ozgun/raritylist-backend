@@ -7,6 +7,7 @@ import { saveMints } from './modules/saveMints'
 import { getMint } from './modules/getMint'
 import { saveTraitOccurences } from './utils/saveRarities'
 import { saveCollectionInfo } from './modules/saveCollectionInfo'
+import { getMintAddresses } from './utils/getMintAddresses'
 
 const PORT = 8000
 
@@ -26,12 +27,12 @@ app.post('/save-collection', async (req, res) => {
     traitOccurences: null,
   })
 
-  // const mintAddresses = await getMintAddresses(req.body.creatorId)
+  const mintAddresses = await getMintAddresses(req.body.creatorId)
 
-  const mintAddresses = [
-    'E42FAenvc3VDz2uyKgjvs8pBsi8Hk7tsMo8c9prEuj2b',
-    '7fwBaWCzQb2Fc2coVfoHVcT4MxBesAHKXCiRvTKSTj15',
-  ]
+  // const mintAddresses = [
+  //   'E42FAenvc3VDz2uyKgjvs8pBsi8Hk7tsMo8c9prEuj2b',
+  //   '7fwBaWCzQb2Fc2coVfoHVcT4MxBesAHKXCiRvTKSTj15',
+  // ]
   console.log('Mint Addresses', mintAddresses.length)
 
   const mints = await getBulkMetadata(mintAddresses)
@@ -42,7 +43,7 @@ app.post('/save-collection', async (req, res) => {
   return res.send('done')
 })
 
-app.post('/calculate-rarity', async (req, res) => {
+app.post('/update-rarity', async (req, res) => {
   if (!req.body?.collectionName)
     return res.status(500).send('No collectionName found.')
 
