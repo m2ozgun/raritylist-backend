@@ -1,4 +1,4 @@
-import { Document, model, Schema } from 'mongoose'
+import { Document, model, Schema, Model } from 'mongoose'
 
 export type MintType = Document & {
   attributes: object
@@ -12,4 +12,6 @@ export const Mint = new Schema({
   name: String,
 })
 
-export default model<MintType>('mint', Mint)
+export const getMintModel = (collectionName: string): Model<MintType> => {
+  return model<MintType>(collectionName, Mint)
+}

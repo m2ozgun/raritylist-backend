@@ -1,4 +1,4 @@
-import MintModel from '../db/models/MintModel'
+import { getMintModel } from '../db/models/MintModel'
 
 type MintMetadata = {
   name?: string
@@ -10,11 +10,13 @@ type Attributes = {
   [key: string]: string
 }
 
-export const saveMints = async (mints: MintMetadata[]) => {
-  console.log('mints', mints)
-
+export const saveMints = async (
+  collectionName: string,
+  mints: MintMetadata[]
+) => {
+  const mintModel = getMintModel(collectionName)
   //   const mintData = await MintModel.create(mintProps)
-  const mintData = await MintModel.insertMany(mints)
+  const mintData = await mintModel.insertMany(mints)
 
   console.log(mintData)
 }

@@ -229,15 +229,8 @@ export const getMintMetadata = async (mintAddress: string) => {
 }
 
 export const getBulkMetadata = async (mintAddresses: string[]) => {
-  // const mints: MintMetadata[] = []
-
   const mintPromises = mintAddresses.map(address => getMintMetadata(address))
 
   const mints: MintMetadata[] = await Promise.all(mintPromises)
-  // for (const address of mintAddresses) {
-  //   const mintMetadata = await getMintMetadata(address)
-  //   if (mintMetadata) mints.push(mintMetadata)
-  // }
-
   return mints
 }
