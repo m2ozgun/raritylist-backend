@@ -7,6 +7,7 @@ const connection = new Connection(API_URL)
 const TOKEN_METADATA_PROGRAM = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s')
 
 export const getMintAddresses = async (firstCreatorAddress: string) => {
+  console.log(`[INFO]: Get mint address ${firstCreatorAddress}`)
   const candyMachineCreator = new PublicKey(firstCreatorAddress)
 
   const metadataAccounts = await connection.getProgramAccounts(TOKEN_METADATA_PROGRAM, {

@@ -1,3 +1,4 @@
+import { CollectionInfoDocType, CollectionInfoType } from '../db/models/CollectionInfoModel'
 import { MintType } from '../db/models/MintModel'
 import { getMints } from '../modules/getMints'
 import { updateCollectionTraitOccurences } from '../modules/updateCollectionTraitOccurences'
@@ -79,32 +80,33 @@ const calculateMintAttributeRanks = async (collectionName: string, traits: strin
   return attributeRanks
 }
 
-const saveRanks = async (collectionName: string, mints: MintType[]) => {
+const saveRanks = async (collectionInfo: CollectionInfoType, mints: MintType[]) => {
   const traitOccurences = countAttributeOccurences(mints)
   const traits = [...Object.keys(traitOccurences), '__aggregate__']
 
-  const attributeRanks = await calculateMintAttributeRanks(collectionName, traits)
+  const attributeRanks = await calculateMintAttributeRanks(collectionInfo.name, traits)
 
-  await updateMintRanks(collectionName, mints, attributeRanks)
+  await updateMintRanks(collectionInfo.name, mints, attributeRanks)
 }
 
-export const saveOccurences = async (collectionName: string, mints: MintType[]) => {
+export const saveOccurences = async (collectionInfo: CollectionInfoType, mints: MintType[]) => {
   const attributeOccurences = countAttributeOccurences(mints)
-  await updateCollectionTraitOccurences(collectionName, attributeOccurences)
+  await updateCollectionTraitOccurences(collectionInfo.name, attributeOccurences)
 }
 
-export const saveProbabilities = async (collectionName: string, mints: MintType[]) => {
+export const saveProbabilities = async (collectionInfo: CollectionInfoType, mints: MintType[]) => {
   const attributeOccurences = countAttributeOccurences(mints)
-
   const attributeProbabilities = calculateMintAttributeProbabilities(mints, attributeOccurences)
 
-  await updateMintProbabilities(collectionName, mints, attributeProbabilities)
+  await updateMintProbabilities(collectionInfo.name, mints, attributeProbabilities)
 }
 
-export const saveRarities = async (collectionName: string) => {
-  const mints = await getMints(collectionName)
+export const saveRarities = async (collectionInfo: CollectionInfoType | CollectionInfoDocType) => {
+  console.log(`[INFO]: Get rarities ${collectionInfo.name}`)
 
-  await saveOccurences(collectionName, mints)
-  await saveProbabilities(collectionName, mints)
-  await saveRanks(collectionName, mints)
+  const mints = await getMints(collectionInfo.name)
+
+  await saveOccurences(collectionInfo, mints)
+  await saveProbabilities(collectionInfo, mints)
+  await saveRanks(collectionInfo, mints)
 }

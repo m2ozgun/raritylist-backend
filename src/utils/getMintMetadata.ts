@@ -214,6 +214,8 @@ export const getMintMetadata = async (mintAddress: string) => {
 }
 
 export const getBulkMetadata = async (mintAddresses: string[]) => {
+  console.log(`[INFO]: Get bulk metadata`)
+
   const mintPromises = mintAddresses.map(address => getMintMetadata(address))
 
   const mints: MintMetadata[] = await Promise.all(mintPromises)
