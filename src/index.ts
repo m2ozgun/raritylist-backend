@@ -5,7 +5,7 @@ import bodyParser from 'body-parser'
 import { getBulkMetadata } from './utils/getMintMetadata'
 import { saveMints } from './modules/saveMints'
 import { getMint } from './modules/getMint'
-import { saveTraitOccurences } from './utils/saveRarities'
+import { saveRarities } from './utils/saveRarities'
 import { saveCollectionInfo } from './modules/saveCollectionInfo'
 import { getMintAddresses } from './utils/getMintAddresses'
 
@@ -38,7 +38,7 @@ app.post('/save-collection', async (req, res) => {
   const mints = await getBulkMetadata(mintAddresses)
   if (!mints) return res.status(500).send('No mints found.')
   await saveMints(req.body.collectionName, mints)
-  await saveTraitOccurences(req.body?.collectionName)
+  await saveRarities(req.body?.collectionName)
 
   return res.send('done')
 })
@@ -47,7 +47,7 @@ app.post('/update-rarity', async (req, res) => {
   if (!req.body?.collectionName)
     return res.status(500).send('No collectionName found.')
 
-  await saveTraitOccurences(req.body?.collectionName)
+  await saveRarities(req.body?.collectionName)
 
   return res.json({ success: true })
 })
