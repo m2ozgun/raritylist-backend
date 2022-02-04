@@ -7,11 +7,7 @@ type Trait = {
 type AttributeRanks = {
   [key: string]: Trait
 }
-export const updateMintRanks = async (
-  collectionName: string,
-  mints: MintType[],
-  attributeRanks: AttributeRanks
-) => {
+export const updateMintRanks = async (collectionName: string, mints: MintType[], attributeRanks: AttributeRanks) => {
   const mintModel = getMintModel(collectionName)
   let bulkOp = mintModel.collection.initializeUnorderedBulkOp()
   let opsCount = 0

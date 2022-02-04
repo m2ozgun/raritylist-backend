@@ -6,9 +6,7 @@ const RPC_URL = process.env.RPC_URL
 if (!process.env.RPC_URL) throw new Error('RPC URL is not defined.')
 
 const connection = new Connection(RPC_URL as string)
-const TOKEN_METADATA_PROGRAM = new PublicKey(
-  'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
-)
+const TOKEN_METADATA_PROGRAM = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s')
 
 type Attributes = {
   [key: string]: string
@@ -151,9 +149,7 @@ async function getMetadata(address: PublicKey) {
 
 async function fetchMetadataFromPDA(address: PublicKey) {
   const metadataKey = await getMetadataKey(address.toBase58())
-  const metadataInfo = await connection.getAccountInfo(
-    new PublicKey(metadataKey)
-  )
+  const metadataInfo = await connection.getAccountInfo(new PublicKey(metadataKey))
 
   return metadataInfo
 }
@@ -161,30 +157,19 @@ async function fetchMetadataFromPDA(address: PublicKey) {
 async function getMetadataKey(tokenMint: string): Promise<string> {
   return (
     await findProgramAddress(
-      [
-        Buffer.from('metadata'),
-        new PublicKey(TOKEN_METADATA_PROGRAM).toBuffer(),
-        new PublicKey(tokenMint).toBuffer(),
-      ],
+      [Buffer.from('metadata'), new PublicKey(TOKEN_METADATA_PROGRAM).toBuffer(), new PublicKey(tokenMint).toBuffer()],
       new PublicKey(TOKEN_METADATA_PROGRAM)
     )
   )[0]
 }
 
-const findProgramAddress = async (
-  seeds: (Buffer | Uint8Array)[],
-  programId: PublicKey
-) => {
+const findProgramAddress = async (seeds: (Buffer | Uint8Array)[], programId: PublicKey) => {
   const result = await PublicKey.findProgramAddress(seeds, programId)
   return [result[0].toBase58(), result[1]] as [string, number]
 }
 
 const decodeMetadata = (buffer: Buffer): Metadata => {
-  const metadata = deserializeUnchecked(
-    METADATA_SCHEMA,
-    Metadata,
-    buffer
-  ) as Metadata
+  const metadata = deserializeUnchecked(METADATA_SCHEMA, Metadata, buffer) as Metadata
 
   metadata.data.name = metadata.data.name.replace(/\0/g, '')
   metadata.data.symbol = metadata.data.symbol.replace(/\0/g, '')

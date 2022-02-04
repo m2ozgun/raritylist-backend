@@ -2,10 +2,7 @@ import { getMintModel } from '../db/models/MintModel'
 
 type SortQuery = Record<string, 1 | -1>
 
-export const getMints = async (
-  collectionName: string,
-  sortBy: string | null = ''
-) => {
+export const getMints = async (collectionName: string, sortBy: string | null = '') => {
   const mintModel = getMintModel(collectionName)
 
   if (sortBy) {

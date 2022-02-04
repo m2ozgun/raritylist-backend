@@ -20,9 +20,7 @@ export const updateMintProbabilities = async (
   mints.forEach(async mint => {
     const probabilities = attributeRanks[mint._id]
 
-    bulkOp
-      .find({ _id: mint._id })
-      .updateOne({ $set: { attributeProbabilities: probabilities } })
+    bulkOp.find({ _id: mint._id }).updateOne({ $set: { attributeProbabilities: probabilities } })
   })
 
   if (++opsCount % 10000 === 0) {

@@ -37,10 +37,7 @@ const countAttributeOccurences = (mints: MintType[]) => {
 }
 
 // get attribute probabilities for categorical attributes
-const calculateMintAttributeProbabilities = (
-  mints: MintType[],
-  traitOccurences: Occurence
-) => {
+const calculateMintAttributeProbabilities = (mints: MintType[], traitOccurences: Occurence) => {
   const attributeProbabilities: AttributeProbabilities = {}
 
   for (const mint of mints) {
@@ -54,9 +51,7 @@ const calculateMintAttributeProbabilities = (
       attributeProbabilities[mint._id][trait] = traitOccurence / 4600
     }
 
-    const totalProbability = Object.values(
-      attributeProbabilities[mint._id]
-    ).reduce((a, b) => a + b, 0)
+    const totalProbability = calculateTotalProbability(mint, attributeProbabilities)
     attributeProbabilities[mint._id]['__aggregate__'] =
       totalProbability / Object.keys(attributeProbabilities[mint._id]).length
   }
@@ -64,19 +59,15 @@ const calculateMintAttributeProbabilities = (
   return attributeProbabilities
 }
 
-const calculateMintAttributeRanks = async (
-  collectionName: string,
-  traits: string[]
-) => {
+const calculateTotalProbability = (mint: MintType, attributeProbabilities: AttributeProbabilities) => {
+  return Object.values(attributeProbabilities[mint._id]).reduce((a, b) => a + b, 0)
+}
+
+const calculateMintAttributeRanks = async (collectionName: string, traits: string[]) => {
   const attributeRanks: AttributeRanks = {}
 
   for (const trait of traits) {
-    const sortedMints = await getMints(
-      collectionName,
-      `attributeProbabilities.${trait}`
-    )
-
-    console.log('sortedMints', trait, sortedMints[0])
+    const sortedMints = await getMints(collectionName, `attributeProbabilities.${trait}`)
 
     for (const mint of sortedMints) {
       if (!attributeRanks[mint._id]) attributeRanks[mint._id] = {}
@@ -92,32 +83,20 @@ const saveRanks = async (collectionName: string, mints: MintType[]) => {
   const traitOccurences = countAttributeOccurences(mints)
   const traits = [...Object.keys(traitOccurences), '__aggregate__']
 
-  const attributeRanks = await calculateMintAttributeRanks(
-    collectionName,
-    traits
-  )
+  const attributeRanks = await calculateMintAttributeRanks(collectionName, traits)
 
   await updateMintRanks(collectionName, mints, attributeRanks)
 }
 
-export const saveOccurences = async (
-  collectionName: string,
-  mints: MintType[]
-) => {
+export const saveOccurences = async (collectionName: string, mints: MintType[]) => {
   const attributeOccurences = countAttributeOccurences(mints)
   await updateCollectionTraitOccurences(collectionName, attributeOccurences)
 }
 
-export const saveProbabilities = async (
-  collectionName: string,
-  mints: MintType[]
-) => {
+export const saveProbabilities = async (collectionName: string, mints: MintType[]) => {
   const attributeOccurences = countAttributeOccurences(mints)
 
-  const attributeProbabilities = calculateMintAttributeProbabilities(
-    mints,
-    attributeOccurences
-  )
+  const attributeProbabilities = calculateMintAttributeProbabilities(mints, attributeOccurences)
 
   await updateMintProbabilities(collectionName, mints, attributeProbabilities)
 }

@@ -18,8 +18,7 @@ app.get('/', (req, res) => res.send('Expresssss + TypeScript Server'))
 
 app.post('/save-collection', async (req, res) => {
   if (!req.body?.creatorId) return res.status(500).send('No creatorId found.')
-  if (!req.body?.collectionName)
-    return res.status(500).send('No collectionName found.')
+  if (!req.body?.collectionName) return res.status(500).send('No collectionName found.')
 
   await saveCollectionInfo({
     name: req.body?.collectionName,
@@ -44,8 +43,7 @@ app.post('/save-collection', async (req, res) => {
 })
 
 app.post('/update-rarity', async (req, res) => {
-  if (!req.body?.collectionName)
-    return res.status(500).send('No collectionName found.')
+  if (!req.body?.collectionName) return res.status(500).send('No collectionName found.')
 
   await saveRarities(req.body?.collectionName)
 
@@ -53,8 +51,7 @@ app.post('/update-rarity', async (req, res) => {
 })
 
 app.post('/get-mint', async (req, res) => {
-  if (!req.body?.collectionName)
-    return res.status(500).send('No collectionName found.')
+  if (!req.body?.collectionName) return res.status(500).send('No collectionName found.')
   if (!req.body?.query) return res.status(500).send('No query found.')
 
   const mint = await getMint(req.body.collectionName, req.body.query)

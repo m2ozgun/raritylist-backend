@@ -10,10 +10,7 @@ type Attributes = {
   [key: string]: string
 }
 
-export const saveMints = async (
-  collectionName: string,
-  mints: MintMetadata[]
-) => {
+export const saveMints = async (collectionName: string, mints: MintMetadata[]) => {
   const mintModel = getMintModel(collectionName)
   //   const mintData = await MintModel.create(mintProps)
   const mintData = await mintModel.insertMany(mints)
