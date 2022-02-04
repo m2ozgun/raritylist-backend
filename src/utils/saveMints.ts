@@ -15,6 +15,7 @@ export const saveMints = async (
   mints: MintMetadata[]
 ) => {
   const mintModel = getMintModel(collectionName)
+  //   const mintData = await MintModel.create(mintProps)
   const mintData = await mintModel.insertMany(mints)
 
   console.log(mintData)
