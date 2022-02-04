@@ -186,10 +186,15 @@ export const getMintUri = async (mintAddress: string) => {
 export const getMintMetadata = async (mintAddress: string) => {
   const mintUri = await getMintUri(mintAddress)
 
-  if (!mintUri) {
-    throw new Error('No mint uri found.')
+  if (!mintUri) throw new Error('No mint uri found.')
+
+  let mintData
+  try {
+    const mintMetadata = await axios.get(mintUri)
+    mintData = mintMetadata.data
+  } catch (error) {
+    console.log(error)
   }
 
-  const mintMetadata = await axios.get(mintUri)
-  return mintMetadata.data
+  return mintData
 }
