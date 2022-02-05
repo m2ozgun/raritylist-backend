@@ -49,7 +49,7 @@ const calculateMintAttributeProbabilities = (mints: MintType[], traitOccurences:
     for (const [trait, traitValue] of Object.entries(attributes)) {
       const traitOccurence = traitOccurences[trait][traitValue]
 
-      attributeProbabilities[mint._id][trait] = traitOccurence / 4600
+      attributeProbabilities[mint._id][trait] = traitOccurence / mints.length
     }
 
     const totalProbability = calculateTotalProbability(mint, attributeProbabilities)
